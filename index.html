@@ -10,8 +10,64 @@
   <link href="https://fonts.googleapis.com/css2?family=Rock+Salt&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
   <link rel="stylesheet" href="theme.css" />
-  <!-- Exemple, si l'image est dans un dossier main, on précise le chemin complet -->
   <link rel="icon" href="images/logo_suly.png" type="image/png" />
+  <style>
+    /* Style simple pour les formulaires */
+    .auth-section {
+      max-width: 400px;
+      margin: 2rem auto;
+      padding: 1rem;
+      background: #f0f0f0;
+      border-radius: 8px;
+      font-family: 'Bebas Neue', sans-serif;
+    }
+    .auth-section h2 {
+      text-align: center;
+      margin-bottom: 0.5rem;
+    }
+    .auth-section form {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+    }
+    .auth-section input {
+      padding: 0.5rem;
+      font-size: 1rem;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+    }
+    .auth-section button {
+      padding: 0.7rem;
+      font-size: 1rem;
+      background: #222;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    #message {
+      text-align: center;
+      font-weight: bold;
+      margin-bottom: 1rem;
+    }
+    #user-info {
+      text-align: center;
+      margin-bottom: 1rem;
+      font-weight: bold;
+    }
+    #logout-btn {
+      display: block;
+      margin: 0 auto 2rem;
+      padding: 0.7rem 1.5rem;
+      background: #c33;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-family: 'Bebas Neue', sans-serif;
+    }
+  </style>
 </head>
 <body>
   <div id="loader">
@@ -20,7 +76,6 @@
 
   <header>
     <div class="logo">
-      <!-- Le chemin doit pointer vers le dossier où est l'image -->
       <img src="images/logo_suly.png" alt="Logo Sully" style="height: 40px;" />
     </div>
     <nav>
@@ -38,7 +93,6 @@
             <li><a href="accessoires.html">Accessoires</a></li>
           </ul>
         </li>
-
         <li><a href="#">Lookbook</a></li>
         <li><a href="#">Nouveautés</a></li>
         <li><a href="contact.html">Contact</a></li>
@@ -47,8 +101,28 @@
   </header>
 
   <section class="hero">
-    <!-- Pareil ici, l'image dans le dossier main -->
     <img class="graffiti-title" src="images/grafiti.png" alt="Welcome Graffiti" />
+  </section>
+
+  <section class="auth-section">
+    <div id="user-info"></div>
+    <button id="logout-btn" style="display:none;">Déconnexion</button>
+
+    <p id="message"></p>
+
+    <h2>Créer un compte</h2>
+    <form id="signup-form">
+      <input type="email" id="email" placeholder="Email" required />
+      <input type="password" id="password" placeholder="Mot de passe" required />
+      <button type="submit">S'inscrire</button>
+    </form>
+
+    <h2>Connexion</h2>
+    <form id="login-form">
+      <input type="email" id="login-email" placeholder="Email" required />
+      <input type="password" id="login-password" placeholder="Mot de passe" required />
+      <button type="submit">Se connecter</button>
+    </form>
   </section>
 
   <footer>
@@ -65,6 +139,88 @@
       setTimeout(() => {
         document.getElementById("loader").style.display = "none";
       }, 2500);
+    });
+  </script>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+
+  <script>
+    // Remplace ces valeurs par celles de ta config Firebase réelle !
+    const firebaseConfig = {
+      apiKey: "AIzaSyC3Lu02nQvQurAU0aBkhv9vQ239xs9xyH0",
+      authDomain: "suly-a48f2.firebaseapp.com",
+      projectId: "suly-a48f2",
+      storageBucket: "suly-a48f2.appspot.com",
+      messagingSenderId: "747436486919",
+      appId: "1:747436486919:web:15993be447249965aa95a2"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+
+    const signupForm = document.getElementById('signup-form');
+    const loginForm = document.getElementById('login-form');
+    const message = document.getElementById('message');
+    const userInfo = document.getElementById('user-info');
+    const logoutBtn = document.getElementById('logout-btn');
+
+    signupForm.addEventListener('submit', e => {
+      e.preventDefault();
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+
+      auth.createUserWithEmailAndPassword(email, password)
+        .then(() => {
+          message.style.color = 'green';
+          message.textContent = "Compte créé avec succès !";
+          signupForm.reset();
+        })
+        .catch(error => {
+          message.style.color = 'red';
+          message.textContent = "Erreur : " + error.message;
+        });
+    });
+
+    loginForm.addEventListener('submit', e => {
+      e.preventDefault();
+      const email = document.getElementById('login-email').value;
+      const password = document.getElementById('login-password').value;
+
+      auth.signInWithEmailAndPassword(email, password)
+        .then(() => {
+          message.style.color = 'green';
+          message.textContent = "Connecté avec succès !";
+          loginForm.reset();
+        })
+        .catch(error => {
+          message.style.color = 'red';
+          message.textContent = "Erreur : " + error.message;
+        });
+    });
+
+    logoutBtn.addEventListener('click', () => {
+      auth.signOut().then(() => {
+        message.style.color = 'green';
+        message.textContent = "Déconnecté.";
+      });
+    });
+
+    // Surveille l'état de connexion
+    auth.onAuthStateChanged(user => {
+      if (user) {
+        userInfo.textContent = `Connecté en tant que : ${user.email}`;
+        logoutBtn.style.display = 'block';
+        signupForm.style.display = 'none';
+        loginForm.style.display = 'none';
+        message.textContent = '';
+      } else {
+        userInfo.textContent = '';
+        logoutBtn.style.display = 'none';
+        signupForm.style.display = 'block';
+        loginForm.style.display = 'block';
+      }
     });
   </script>
 </body>
