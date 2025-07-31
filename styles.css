@@ -169,3 +169,19 @@ footer a:hover {
   margin: 0 auto;        /* centre l’image horizontalement */
   object-fit: contain;   /* évite la déformation */
 }
+/* Exemple pour les petits écrans (smartphones) */
+@media (max-width: 600px) {
+  nav ul.main-nav {
+    flex-direction: column;  /* menu vertical */
+    gap: 1rem;
+  }
+
+  .produit img {
+    width: 100%;  /* images prennent toute la largeur possible */
+    height: auto;
+  }
+
+  header {
+    padding: 0 1rem;
+  }
+}
