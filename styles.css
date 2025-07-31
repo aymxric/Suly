@@ -300,4 +300,31 @@ footer a:hover {
 .auth-buttons .auth-link:hover {
   background-color: #444;
 }
+/* Par défaut pour mobile */
+.auth-section {
+  padding: 1rem;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* Responsive pour écran moyen à grand (tablette, PC) */
+@media (min-width: 600px) {
+  .auth-section {
+    max-width: 400px;
+    margin: 2rem auto;
+    border: 1px solid #ddd;
+    padding: 2rem;
+    border-radius: 10px;
+    background: #f9f9f9;
+  }
+}
+
+/* Champs et boutons responsive */
+.auth-section input,
+.auth-section button {
+  width: 100%;
+  padding: 0.8rem;
+  margin: 0.5rem 0;
+  font-size: 1rem;
+}
 
