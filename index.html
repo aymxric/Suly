@@ -1,74 +1,25 @@
-<!DOCTYPE html>
-<html lang="fr">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Suly</title>
+
+  <!-- Fonts Google -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Anton&family=Bebas+Neue&display=swap" rel="stylesheet" />
   <link href="https://fonts.googleapis.com/css2?family=Rock+Salt&display=swap" rel="stylesheet" />
+
+  <!-- Tes CSS -->
   <link rel="stylesheet" href="styles.css" />
   <link rel="stylesheet" href="theme.css" />
+
   <link rel="icon" href="images/logo_suly.png" type="image/png" />
-  <style>
-    /* Style simple pour les formulaires */
-    .auth-section {
-      max-width: 400px;
-      margin: 2rem auto;
-      padding: 1rem;
-      background: #f0f0f0;
-      border-radius: 8px;
-      font-family: 'Bebas Neue', sans-serif;
-    }
-    .auth-section h2 {
-      text-align: center;
-      margin-bottom: 0.5rem;
-    }
-    .auth-section form {
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-      margin-bottom: 1.5rem;
-    }
-    .auth-section input {
-      padding: 0.5rem;
-      font-size: 1rem;
-      border-radius: 4px;
-      border: 1px solid #ccc;
-    }
-    .auth-section button {
-      padding: 0.7rem;
-      font-size: 1rem;
-      background: #222;
-      color: #fff;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-    #message {
-      text-align: center;
-      font-weight: bold;
-      margin-bottom: 1rem;
-    }
-    #user-info {
-      text-align: center;
-      margin-bottom: 1rem;
-      font-weight: bold;
-    }
-    #logout-btn {
-      display: block;
-      margin: 0 auto 2rem;
-      padding: 0.7rem 1.5rem;
-      background: #c33;
-      color: white;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      font-family: 'Bebas Neue', sans-serif;
-    }
-  </style>
+
+  <!-- Scripts Firebase (version compat pour ton code) -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 </head>
+
 <body>
   <div id="loader">
     <img src="https://www.sulyclothing.com/cdn/shop/files/3dgifmaker28792.gif?v=1724799956" alt="Chargement..." />
@@ -98,6 +49,10 @@
         <li><a href="contact.html">Contact</a></li>
       </ul>
     </nav>
+    <div class="auth-buttons">
+  <a href="login.html" class="auth-link">Se connecter</a>
+  <a href="signup.html" class="auth-link">S'inscrire</a>
+</div>
   </header>
 
   <section class="hero">
@@ -105,20 +60,21 @@
   </section>
 
   <section class="auth-section">
+    <button id="close-auth" title="Fermer">&times;</button>
     <div id="user-info"></div>
     <button id="logout-btn" style="display:none;">Déconnexion</button>
 
     <p id="message"></p>
 
-    <h2>Créer un compte</h2>
-    <form id="signup-form">
+    <form id="signup-form" style="display:none;">
+      <h2>Créer un compte</h2>
       <input type="email" id="email" placeholder="Email" required />
       <input type="password" id="password" placeholder="Mot de passe" required />
       <button type="submit">S'inscrire</button>
     </form>
 
-    <h2>Connexion</h2>
-    <form id="login-form">
+    <form id="login-form" style="display:none;">
+      <h2>Connexion</h2>
       <input type="email" id="login-email" placeholder="Email" required />
       <input type="password" id="login-password" placeholder="Mot de passe" required />
       <button type="submit">Se connecter</button>
@@ -135,19 +91,14 @@
   </footer>
 
   <script>
+    
     window.addEventListener("load", () => {
       setTimeout(() => {
-        document.getElementById("loader").style.display = "none";
+        const loader = document.getElementById("loader");
+        loader.style.display = "none";
       }, 2500);
     });
-  </script>
 
-  <!-- Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-
-  <script>
-    // Remplace ces valeurs par celles de ta config Firebase réelle !
     const firebaseConfig = {
       apiKey: "AIzaSyC3Lu02nQvQurAU0aBkhv9vQ239xs9xyH0",
       authDomain: "suly-a48f2.firebaseapp.com",
@@ -165,6 +116,31 @@
     const message = document.getElementById('message');
     const userInfo = document.getElementById('user-info');
     const logoutBtn = document.getElementById('logout-btn');
+    const authSection = document.querySelector('.auth-section');
+    const btnLogin = document.getElementById('btn-login');
+    const btnSignup = document.getElementById('btn-signup');
+    const closeAuthBtn = document.getElementById('close-auth');
+
+    btnLogin.addEventListener('click', () => {
+      authSection.style.display = 'block';
+      loginForm.style.display = 'flex';
+      signupForm.style.display = 'none';
+      message.textContent = '';
+      document.getElementById('login-email').focus();
+    });
+
+    btnSignup.addEventListener('click', () => {
+      authSection.style.display = 'block';
+      signupForm.style.display = 'flex';
+      loginForm.style.display = 'none';
+      message.textContent = '';
+      document.getElementById('email').focus();
+    });
+
+    closeAuthBtn.addEventListener('click', () => {
+      authSection.style.display = 'none';
+      message.textContent = '';
+    });
 
     signupForm.addEventListener('submit', e => {
       e.preventDefault();
@@ -207,21 +183,19 @@
       });
     });
 
-    // Surveille l'état de connexion
     auth.onAuthStateChanged(user => {
       if (user) {
         userInfo.textContent = `Connecté en tant que : ${user.email}`;
         logoutBtn.style.display = 'block';
-        signupForm.style.display = 'none';
-        loginForm.style.display = 'none';
+        authSection.style.display = 'none';
         message.textContent = '';
       } else {
         userInfo.textContent = '';
         logoutBtn.style.display = 'none';
-        signupForm.style.display = 'block';
-        loginForm.style.display = 'block';
+        authSection.style.display = 'none';
       }
     });
   </script>
+ 
 </body>
 </html>
